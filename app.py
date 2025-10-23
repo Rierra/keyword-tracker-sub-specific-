@@ -137,12 +137,12 @@ class RedditTelegramBot:
                 if hasattr(item, 'selftext') and item.selftext:
                     content = item.selftext[:300] + "..." if len(item.selftext) > 300 else item.selftext
                 
-                msg = f"🔍 Keyword: {keyword}\n\n"
-                msg += f"📝 {title}\n"
-                msg += f"👤 u/{item.author} | 📍 r/{item.subreddit}\n"
+                msg = f" Keyword: {keyword}\n\n"
+                msg += f" {title}\n"
+                msg += f" u/{item.author} |  r/{item.subreddit}\n"
                 if content:
                     msg += f"\n{content}\n"
-                msg += f"\n🔗 https://reddit.com{item.permalink}"
+                msg += f"\n https://reddit.com{item.permalink}"
             else:  # comment
                 content = ""
                 if hasattr(item, 'body') and item.body:
@@ -357,17 +357,17 @@ Examples:
     async def menu(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Show interactive menu"""
         keyboard = [
-            [InlineKeyboardButton("➕ Add Keywords", callback_data="add_kw"),
-             InlineKeyboardButton("➖ Remove Keywords", callback_data="remove_kw")],
-            [InlineKeyboardButton("📋 List Keywords", callback_data="list_kw"),
-             InlineKeyboardButton("🗑️ Clear Keywords", callback_data="clear_kw")],
-            [InlineKeyboardButton("➕ Add Subreddits", callback_data="add_sub"),
-             InlineKeyboardButton("➖ Remove Subreddits", callback_data="remove_sub")],
-            [InlineKeyboardButton("📋 List Subreddits", callback_data="list_sub"),
-             InlineKeyboardButton("🗑️ Reset Subreddits", callback_data="clear_sub")],
-            [InlineKeyboardButton("📊 Status", callback_data="status"),
-             InlineKeyboardButton(f"🔄 {'Disable' if self.enabled else 'Enable'}", callback_data="toggle")],
-            [InlineKeyboardButton(f"{'⏹️ Stop' if self.is_monitoring else '▶️ Start'} Monitoring", callback_data="toggle_mon")]
+            [InlineKeyboardButton(" Add Keywords", callback_data="add_kw"),
+             InlineKeyboardButton(" Remove Keywords", callback_data="remove_kw")],
+            [InlineKeyboardButton(" List Keywords", callback_data="list_kw"),
+             InlineKeyboardButton(" Clear Keywords", callback_data="clear_kw")],
+            [InlineKeyboardButton(" Add Subreddits", callback_data="add_sub"),
+             InlineKeyboardButton(" Remove Subreddits", callback_data="remove_sub")],
+            [InlineKeyboardButton(" List Subreddits", callback_data="list_sub"),
+             InlineKeyboardButton(" Reset Subreddits", callback_data="clear_sub")],
+            [InlineKeyboardButton(" Status", callback_data="status"),
+             InlineKeyboardButton(f" {'Disable' if self.enabled else 'Enable'}", callback_data="toggle")],
+            [InlineKeyboardButton(f"{' Stop' if self.is_monitoring else ' Start'} Monitoring", callback_data="toggle_mon")]
         ]
         
         reply_markup = InlineKeyboardMarkup(keyboard)
@@ -599,3 +599,4 @@ def main():
 if __name__ == "__main__":
 
     main()
+
