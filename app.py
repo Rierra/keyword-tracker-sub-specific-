@@ -148,17 +148,17 @@ class RedditTelegramBot:
                 if hasattr(item, 'body') and item.body:
                     content = item.body[:300] + "..." if len(item.body) > 300 else item.body
                 
-                msg = f"🔍 Keyword: {keyword}\n\n"
-                msg += f"💬 Comment by u/{item.author}\n"
-                msg += f"📍 r/{item.subreddit}\n"
+                msg = f" Keyword: {keyword}\n\n"
+                msg += f" Comment by u/{item.author}\n"
+                msg += f" r/{item.subreddit}\n"
                 if content:
                     msg += f"\n{content}\n"
-                msg += f"\n🔗 https://reddit.com{item.permalink}"
+                msg += f"\n https://reddit.com{item.permalink}"
             
             return msg
         except Exception as e:
             logger.error(f"Error formatting notification: {e}")
-            return f"🔍 Keyword: {keyword}\n\nError formatting notification"
+            return f" Keyword: {keyword}\n\nError formatting notification"
 
     async def send_message(self, text: str):
         """Send message to Telegram"""
@@ -327,7 +327,7 @@ class RedditTelegramBot:
     async def start_cmd(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Start command"""
         help_text = """
-🤖 Reddit to Telegram Monitor Bot
+ Keyword Monitor Bot
 
 Commands:
 /start - Show this help
@@ -371,7 +371,7 @@ Examples:
         ]
         
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await update.message.reply_text("🤖 Bot Menu:", reply_markup=reply_markup)
+        await update.message.reply_text(" Bot Menu:", reply_markup=reply_markup)
 
     async def callback_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle button callbacks"""
@@ -450,10 +450,10 @@ Examples:
         elif data == "toggle_mon":
             if self.is_monitoring:
                 await self.stop_monitoring()
-                await query.edit_message_text("⏹️ Monitoring stopped")
+                await query.edit_message_text(" Monitoring stopped")
             else:
                 await self.start_monitoring()
-                await query.edit_message_text("▶️ Monitoring started")
+                await query.edit_message_text(" Monitoring started")
 
     async def handle_text(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Handle text input for adding/removing items"""
@@ -534,16 +534,16 @@ Examples:
     async def startmon_cmd(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Start monitoring"""
         await self.start_monitoring()
-        await update.message.reply_text("▶️ Monitoring started")
+        await update.message.reply_text(" Monitoring started")
 
     async def stopmon_cmd(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Stop monitoring"""
         await self.stop_monitoring()
-        await update.message.reply_text("⏹️ Monitoring stopped")
+        await update.message.reply_text(" Monitoring stopped")
 
     async def status_cmd(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         """Show status"""
-        status = f"📊 Bot Status\n\n"
+        status = f" Bot Status\n\n"
         status += f"Enabled: {'Yes' if self.enabled else 'No'}\n"
         status += f"Monitoring: {'Active' if self.is_monitoring else 'Stopped'}\n"
         status += f"Keywords: {len(self.keywords)}\n"
@@ -597,4 +597,5 @@ def main():
         logger.info("Bot stopped")
 
 if __name__ == "__main__":
+
     main()
