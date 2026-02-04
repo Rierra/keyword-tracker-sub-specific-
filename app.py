@@ -3,6 +3,7 @@
 Reddit to Telegram Monitor Bot - Simplified Version
 Monitors specific subreddits for keywords
 Supports Multiple Telegram Groups
+Auto-kills old instances on startup
 """
 
 import os
@@ -11,6 +12,9 @@ import time
 import logging
 import asyncio
 import re
+import signal
+import sys
+import atexit
 from typing import Set, Optional, Dict, Any
 from datetime import datetime
 
@@ -26,6 +30,48 @@ logging.basicConfig(
     level=logging.INFO
 )
 logger = logging.getLogger(__name__)
+
+def enforce_single_instance():
+    """Ensure only one instance is running by killing the old one"""
+    pid_file = 'bot.pid'
+    
+    # Check for existing instance
+    if os.path.exists(pid_file):
+        try:
+            with open(pid_file, 'r') as f:
+                content = f.read().strip()
+                if content:
+                    old_pid = int(content)
+                    if old_pid != os.getpid():
+                        logger.info(f"Found old instance (PID {old_pid}), terminating it...")
+                        try:
+                            # Try to kill the old process
+                            os.kill(old_pid, signal.SIGTERM)
+                            time.sleep(1) # Give it a moment to die
+                        except ProcessLookupError:
+                            logger.info("Old process not running")
+                        except OSError as e:
+                            logger.warning(f"Could not kill old process: {e}")
+        except Exception as e:
+            logger.warning(f"Error checking PID file: {e}")
+
+    # Write current PID
+    try:
+        with open(pid_file, 'w') as f:
+            f.write(str(os.getpid()))
+        
+        # Cleanup on exit
+        def cleanup():
+            try:
+                if os.path.exists(pid_file):
+                    os.remove(pid_file)
+            except Exception:
+                pass
+        
+        atexit.register(cleanup)
+        
+    except Exception as e:
+        logger.error(f"Could not write PID file: {e}")
 
 class RedditTelegramBot:
     def __init__(self):
@@ -645,6 +691,7 @@ Commands work for THIS group/chat only:
                 await self.reddit.close()
 
 def main():
+    enforce_single_instance()
     bot = RedditTelegramBot()
     try:
         asyncio.run(bot.run())
