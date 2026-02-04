@@ -287,6 +287,7 @@ class RedditTelegramBot:
                             body_match = self.contains_keyword(post.selftext, keyword)
                         
                         if title_match or body_match:
+                            logger.info(f"MATCH: Sending post '{keyword}' alert to chat_id={chat_id}")
                             message = self.format_notification(post, keyword, "post")
                             await self.send_message(chat_id, message)
                             processed.add(post.id)
@@ -309,6 +310,7 @@ class RedditTelegramBot:
                         if comment.id in processed: continue
                         
                         if hasattr(comment, 'body') and self.contains_keyword(comment.body, keyword):
+                            logger.info(f"MATCH: Sending comment '{keyword}' alert to chat_id={chat_id}")
                             message = self.format_notification(comment, keyword, "comment")
                             await self.send_message(chat_id, message)
                             processed.add(comment.id)
@@ -369,6 +371,7 @@ class RedditTelegramBot:
                             if self.contains_keyword(comment_body, keyword):
                                 # Check duplicate per group
                                 if comment.id not in config['processed_items']:
+                                    logger.info(f"MATCH: Sending '{keyword}' alert to chat_id={chat_id} (group has keywords: {config['keywords']})")
                                     message = self.format_notification(comment, keyword, "comment")
                                     await self.send_message(chat_id, message)
                                     config['processed_items'].add(comment.id)
@@ -390,6 +393,8 @@ class RedditTelegramBot:
                     continue
                 
                 logger.info(f"Starting cycle for {len(self.groups)} groups")
+                for gid, gcfg in self.groups.items():
+                    logger.info(f"  Group {gid}: keywords={gcfg['keywords']}, subs={gcfg['subreddits']}")
                 
                 for chat_id, config in list(self.groups.items()):
                     if not self.is_monitoring: break
